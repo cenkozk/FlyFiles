@@ -1,154 +1,79 @@
 import React from "react";
 import "./App.css";
-import io from "socket.io-client";
-import SimplePeer from "simple-peer";
-import SimplePeerFiles from "simple-peer-files";
 import { nanoid } from "nanoid";
+import ServerSide from "./components/ServerSide";
+import Navbar from "./components/Navbar";
+import Card from "./components/Card";
+import Footer from "./components/Footer";
+import AvailibleDevices from "./components/AvailibleDevices";
+import ReceivedFileDialog from "./components/ReceivedFileDialog";
+import generateStupidName from "sillyname";
 
 function App() {
-  //eslint-disable-next-line
+  const mySillyName = React.useRef(generateStupidName());
   const [peers, setPeers] = React.useState([]);
-  const socketRef = React.useRef();
-  const peersRef = React.useRef([]);
-  const fileInput = React.useRef();
-  const selectedFile = React.useRef();
-  const downloadedFile = React.useRef();
-  const spf = React.useRef(new SimplePeerFiles());
+  const ServerSideRef = React.useRef();
+  const dialogRef = React.useRef();
 
-  React.useEffect(() => {
-    socketRef.current = io.connect("ws://192.168.2.7:3161");
-
-    socketRef.current.on("connect", function () {
-      console.log("Successfully connected to the server!");
-      socketRef.current.emit("join room");
-    });
-
-    //Create peers from server
-    socketRef.current.on("all users", (users) => {
-      var indexOfMe = users.indexOf(socketRef.current.id);
-      users.splice(indexOfMe, 1);
-      const peers = [];
-      users.forEach((userID) => {
-        const peer = createPeer(userID, socketRef.current.id);
-        peersRef.current.push({
-          peerID: userID,
-          peer,
-        });
-        peers.push(peer);
-      });
-      setPeers(peers);
-    });
-
-    socketRef.current.on("user joined", (payload) => {
-      const peer = addPeer(payload.signal, payload.callerID);
-      peersRef.current.push({
-        peerID: payload.callerID,
-        peer,
-      });
-      setPeers((users) => [...users, peer]);
-    });
-
-    socketRef.current.on("receiving returned signal", (payload) => {
-      const item = peersRef.current.find((p) => p.peerID === payload.signalSender);
-      item.peer.signal(payload.signal);
-    });
-
-    socketRef.current.on("remove disconnected", (id) => {
-      const item = peersRef.current.find((p) => p.peerID === id);
-      var indexOfDisconnected = peersRef.current.indexOf(item);
-      peersRef.current.splice(indexOfDisconnected, 1);
-      setPeers((prevPeers) => prevPeers.splice(indexOfDisconnected, 1));
-    });
-  }, []);
-
-  function createPeer(userToSignal, callerID) {
-    const peer = new SimplePeer({
-      initiator: true,
-      trickle: false,
-    });
-
-    peer.on("signal", (signal) => {
-      socketRef.current.emit("sending signal", { userToSignal, callerID, signal });
-    });
-
-    spf.current.receive(peer, "TEST").then((transfer) => {
-      transfer.on("progress", (sentBytes) => {
-        console.log(sentBytes);
-        if (sentBytes === 100) {
-          downloadedFile.current = new File([new Blob(transfer.fileData, { type: transfer.type })], transfer.fileName);
-        }
-      });
-    });
-
-    return peer;
-  }
-
-  function addPeer(incomingSignal, callerID) {
-    const peer = new SimplePeer({
-      initiator: false,
-      trickle: false,
-    });
-
-    peer.on("signal", (signal) => {
-      socketRef.current.emit("returning signal", { signal, callerID });
-    });
-
-    spf.current.receive(peer, "TEST").then((transfer) => {
-      transfer.on("progress", (sentBytes) => {
-        console.log(sentBytes);
-        if (sentBytes === 100) {
-          downloadedFile.current = new File([new Blob(transfer.fileData, { type: transfer.type })], transfer.fileName);
-        }
-      });
-    });
-
-    peer.signal(incomingSignal);
-    return peer;
-  }
-
-  function handleClick() {
-    const element = document.createElement("a");
-    const file = downloadedFile.current;
-    element.href = URL.createObjectURL(file);
-    element.download = file.name;
-    document.body.appendChild(element);
-    element.click();
-  }
-
-  function handlePeerClick(peer) {
-    // peer is the SimplePeer object connection to receiver
-    spf.current.send(peer.peer, "TEST", selectedFile.current).then((transfer) => {
-      transfer.on("progress", (sentBytes) => {});
-      transfer.start();
-    });
-  }
-
-  const changeHandler = (event) => {
-    selectedFile.current = event.target.files[0];
-  };
-
+  //Selecting file
+  const fileInput = React.useRef(null);
+  const [selectedFile, setSelectedFile] = React.useState([]);
+  const [selectedFileName, setSelectedFileName] = React.useState("");
+  const [receivedFiles, setReceivedFiles] = React.useState([]);
   const selectFile = () => {
     fileInput.current.click();
   };
+  const changeHandler = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+  React.useEffect(() => {
+    setSelectedFileName(selectedFile.name);
+  }, [selectedFile]);
 
-  var peersMap = [...peersRef.current];
+  ////////////
+  function returnUsersFunc(arr) {
+    setPeers(arr);
+  }
+
+  function onSendClick(sillyName) {
+    var peer = peers.find((p) => p.sillyName === sillyName).peer;
+    ServerSideRef.current.handlePeerClick(peer);
+  }
+
+  function onFileReceive(file) {
+    dialogRef.current.handleClickOpen(file);
+  }
+
+  var isEmpty = selectedFile.length === 0 ? true : false;
+  var peersList = peers.map((p) => (
+    <AvailibleDevices
+      key={nanoid()}
+      deviceName={p.sillyName}
+      isMobile={p.isMobile}
+      sendStatus={!isEmpty}
+      onClickEvent={() => {
+        onSendClick(p.sillyName);
+      }}
+    />
+  ));
 
   return (
-    <div>
-      <button onClick={handleClick}>Download!</button>
-      <h1>Server</h1>
-      <input type="file" style={{ display: "none" }} ref={fileInput} onChange={changeHandler} />
-      <button onClick={selectFile}>UPLOAD!</button>
-      {peersMap.map((peer) => (
-        <button
-          key={nanoid()}
-          onClick={() => {
-            handlePeerClick(peer);
-          }}
-        >
-          {peer.peerID}
-        </button>
-      ))}
+    <div className="main">
+      <Navbar />
+      <div className="main--block">
+        <ServerSide ref={ServerSideRef} mySillyName={mySillyName.current} returnUsers={returnUsersFunc} selectedFile={selectedFile} onFileReceive={onFileReceive} />
+        <Card fileType="" isEmpty={isEmpty} refObj={fileInput} onClickEvent={selectFile} onChangeEvent={changeHandler} fileName={selectedFileName} />
+        <div className="id-box">
+          <h2 className="mySillyName">
+            You're <span style={{ color: "#E76D61", fontWeight: 800 }}>{mySillyName.current}</span>😎
+          </h2>
+        </div>
+        <h1 className="availible-header">•Available Devices</h1>
+        {peersList}
+        {peersList.length === 0 ? <img style={{ width: 250 }} className="empty-image" src="/empty.svg" /> : <div />}
+      </div>
+      <Footer />
+      <ReceivedFileDialog ref={dialogRef} />
     </div>
   );
 }

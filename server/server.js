@@ -12,20 +12,21 @@ io.on("connection", (socket) => {
   console.log("User connected", socket.id);
 
   //Add user to array.
-  usersArr.push(socket.id);
-  console.log(usersArr);
+  const mySocketID = socket.id;
+  usersArr.push({ socketId: mySocketID, sillyName: null });
 
-  //Greet
-  socket.send(`Hello from server ${socket.id}`);
-
-  socket.on("join room", () => {
+  socket.on("join room", (payload) => {
+    usersArr = usersArr.map((users) => (users.socketId === mySocketID ? { socketId: mySocketID, sillyName: payload.mySillyName, isMobile: payload.isMobile } : users));
     socket.emit("all users", usersArr);
+    console.log(usersArr);
   });
 
   socket.on("sending signal", (payload) => {
     var callerID = payload.callerID;
     var signal = payload.signal;
-    socket.broadcast.to(payload.userToSignal).emit("user joined", { callerID, signal });
+    var sillyName = payload.mySillyName;
+    var isMobile = payload.isMobile;
+    socket.broadcast.to(payload.userToSignal).emit("user joined", { callerID, signal, sillyName, isMobile });
   });
 
   socket.on("returning signal", (payload) => {
