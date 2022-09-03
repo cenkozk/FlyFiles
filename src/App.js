@@ -20,6 +20,8 @@ function App() {
   const [selectedFile, setSelectedFile] = React.useState([]);
   const [selectedFileName, setSelectedFileName] = React.useState("");
   const [receivedFiles, setReceivedFiles] = React.useState([]);
+  var isEmpty = selectedFile.length === 0 ? true : false;
+
   const selectFile = () => {
     fileInput.current.click();
   };
@@ -27,7 +29,7 @@ function App() {
     setSelectedFile(event.target.files[0]);
   };
   React.useEffect(() => {
-    setSelectedFileName(selectedFile.name);
+    setSelectedFileName(isEmpty ? "Drag and drop or select a file." : selectedFile.name);
   }, [selectedFile]);
 
   ////////////
@@ -37,14 +39,18 @@ function App() {
 
   function onSendClick(sillyName) {
     var peer = peers.find((p) => p.sillyName === sillyName).peer;
+    peer.send("1");
     ServerSideRef.current.handlePeerClick(peer);
+  }
+
+  function onClickSave() {
+    ServerSideRef.current.handleClick();
   }
 
   function onFileReceive(file) {
     dialogRef.current.handleClickOpen(file);
+    console.log("recieved a file");
   }
-
-  var isEmpty = selectedFile.length === 0 ? true : false;
   var peersList = peers.map((p) => (
     <AvailibleDevices
       key={nanoid()}
@@ -73,7 +79,7 @@ function App() {
         {peersList.length === 0 ? <img style={{ width: 250 }} className="empty-image" src="/empty.svg" /> : <div />}
       </div>
       <Footer />
-      <ReceivedFileDialog ref={dialogRef} />
+      <ReceivedFileDialog ref={dialogRef} onClickSave={onClickSave} />
     </div>
   );
 }

@@ -20,6 +20,11 @@ function ReceivedFileDialog(props, ref) {
     setOpen(false);
   };
 
+  const handleCloseSave = () => {
+    setOpen(false);
+    props.onClickSave();
+  };
+
   useImperativeHandle(ref, () => ({
     handleClickOpen,
   }));
@@ -48,7 +53,7 @@ function ReceivedFileDialog(props, ref) {
           <Button sx={{ borderRadius: "20px", fontFamily: raleway, fontWeight: "800", color: "#E76D61" }} onClick={handleClose}>
             Close
           </Button>
-          <Button sx={{ borderRadius: "20px", fontFamily: raleway, fontWeight: "800", color: "#E76D61" }} onClick={handleClose}>
+          <Button sx={{ borderRadius: "20px", fontFamily: raleway, fontWeight: "800", color: "#E76D61" }} onClick={handleCloseSave}>
             Save
           </Button>
         </DialogActions>

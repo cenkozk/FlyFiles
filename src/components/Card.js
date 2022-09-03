@@ -21,7 +21,7 @@ export default function Card(props) {
               Selected File
             </Typography>
             <Typography
-              sx={{ fontFamily: raleway, fontStyle: "normal", fontWeight: "600", fontSize: "14px", letterSpacing: "0.25px", color: "#3E3E3E", maxWidth: "100px" }}
+              sx={{ fontFamily: raleway, fontStyle: "normal", fontWeight: "600", fontSize: "14px", letterSpacing: "0.25px", color: "#3E3E3E", maxWidth: "120px" }}
               component="div"
             >
               {props.fileName}

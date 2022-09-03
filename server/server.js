@@ -16,17 +16,21 @@ io.on("connection", (socket) => {
   usersArr.push({ socketId: mySocketID, sillyName: null });
 
   socket.on("join room", (payload) => {
-    usersArr = usersArr.map((users) => (users.socketId === mySocketID ? { socketId: mySocketID, sillyName: payload.mySillyName, isMobile: payload.isMobile } : users));
+    usersArr = usersArr.map((users) =>
+      users.socketId === mySocketID ? { socketId: mySocketID, sillyName: payload.mySillyName, isMobile: payload.isMobile, myIP: payload.myIP } : users
+    );
+    socket.join(payload.myIP);
     socket.emit("all users", usersArr);
     console.log(usersArr);
   });
 
   socket.on("sending signal", (payload) => {
+    console.log(io.of(socket.id).adapter.rooms);
     var callerID = payload.callerID;
     var signal = payload.signal;
     var sillyName = payload.mySillyName;
     var isMobile = payload.isMobile;
-    socket.broadcast.to(payload.userToSignal).emit("user joined", { callerID, signal, sillyName, isMobile });
+    socket.broadcast.to(payload.myIP).emit("user joined", { callerID, signal, sillyName, isMobile, userToSignal: payload.userToSignal });
   });
 
   socket.on("returning signal", (payload) => {
@@ -41,7 +45,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", (reason) => {
-    console.log(socket.id, "left because", '"' + reason + '"');
+    console.log(socket.id, "left because", '"' + reason + '"', io.of(socket.id).adapter.rooms);
     var index = usersArr.indexOf(socket.id);
     usersArr.splice(index, 1);
     console.log(usersArr);
@@ -50,8 +54,8 @@ io.on("connection", (socket) => {
   });
 });
 
-function disconnectFromAll(id) {
-  io.emit("remove disconnected", id);
+function disconnectFromAll(id, ip) {
+  io.to(ip).emit("remove disconnected", id);
 }
 
 httpServer.listen(3161, console.log("listening *3161"));
