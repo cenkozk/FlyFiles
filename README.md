@@ -5,4 +5,4 @@
 ![plot](./chrome_sLh5eejhAJ.gif)
 
 FlyFiles basically sorts out all the current websockets and seperates them with their LAN devices.<br />
-So if you're connected to same network, you can simply share your any size file over network with RTCDataChannels.
+So if you're connected to the same network, you can simply share your any size file over the network with the RTCDataChannels.
