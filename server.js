@@ -13,19 +13,27 @@ io.on("connection", (socket) => {
 
   //Add user to array.
   const mySocketID = socket.id;
-  usersArr.push({ socketId: mySocketID, sillyName: null });
 
   socket.on("join room", (payload) => {
+    usersArr.push({ socketId: mySocketID, sillyName: null, myIP: payload.myIP });
     usersArr = usersArr.map((users) =>
       users.socketId === mySocketID ? { socketId: mySocketID, sillyName: payload.mySillyName, isMobile: payload.isMobile, myIP: payload.myIP } : users
     );
-    socket.join(payload.myIP);
-    socket.emit("all users", usersArr);
-    console.log(usersArr);
+    console.log(payload.hasOwnProperty("signal"));
+    // join the room with a combination of the IP address and socket id
+    socket.join(`${payload.myIP}`);
+    // send the "all users" event to the client
+    socket.emit(
+      "all users",
+      usersArr.filter((user) => user.myIP === payload.myIP)
+    );
+    console.log(
+      usersArr.filter((user) => user.myIP === payload.myIP),
+      "sent"
+    );
   });
 
   socket.on("sending signal", (payload) => {
-    console.log(io.of(socket.id).adapter.rooms);
     var callerID = payload.callerID;
     var signal = payload.signal;
     var sillyName = payload.mySillyName;

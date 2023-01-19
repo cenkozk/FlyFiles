@@ -3,6 +3,7 @@ import io from "socket.io-client";
 import SimplePeer from "simple-peer";
 import SimplePeerFiles from "simple-peer-files";
 import { isMobile } from "react-device-detect";
+
 //eslint-disable-next-line
 function ServerSide(props, ref) {
   const [peers, setPeers] = React.useState([]);
@@ -35,27 +36,28 @@ function ServerSide(props, ref) {
         });
 
       //Connection
-      socketRef.current = io.connect("ws://192.168.2.7:3161");
+      socketRef.current = io.connect("ws://192.168.68.122:3161");
       await socketRef.current.on("connect", function () {
         console.log("Successfully connected to the server!");
 
         //Create me.
-        const peer = new SimplePeer({
-          initiator: true,
-          trickle: false,
-        });
+        const peer = new SimplePeer({ initiator: true, trickle: false });
         allPeersRefTest.current.push({
           peerID: socketRef.current.id,
           sillyName: mySillyName,
           isMobile: isMobile,
           peer,
         });
-        socketRef.current.emit("join room", { mySillyName, isMobile, myIP: myIP.current });
+        console.log("ok");
+        peer.on("signal", (data) => {
+          // The signal data is generated here and can be passed to the other peer to establish the connection
+          socketRef.current.emit("join room", { mySillyName, isMobile, myIP: myIP.current, signal: data });
+        });
       });
 
       //Create peers from server
       socketRef.current.on("all users", (users) => {
-        console.log("all suers");
+        console.log(users);
         var myId = socketRef.current.id;
         var indexOfMe = users.indexOf({ myId, mySillyName, isMobile });
         users.splice(indexOfMe, 1);
