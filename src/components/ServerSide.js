@@ -36,7 +36,7 @@ function ServerSide(props, ref) {
         });
 
       //Connection
-      socketRef.current = io.connect("ws://backendflyfiles-production.up.railway.app");
+      socketRef.current = io.connect("ws://backendflyfiles-production.up.railway.app:3161");
       await socketRef.current.on("connect", function () {
         console.log("Successfully connected to the server!");
 
