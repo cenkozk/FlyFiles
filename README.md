@@ -2,7 +2,9 @@
 
 # FlyFiles: A File Sharing Application over the Web
 
-FlyFiles is a LAN-based file transfer app that enables users to share files with ease. The app has been designed with convenience and security in mind, and it provides a fast and reliable way to transfer files between devices.
+FlyFiles is a LAN-based file transfer app that enables users to share files with ease. You can check out the live version of the app by clicking on this [link](https://fly-files.vercel.app/).
+
+The app has been designed with convenience and security in mind, and it provides a fast and reliable way to transfer files between devices.
 
 ## Features
 
@@ -19,11 +21,11 @@ Here are some of the key features of FlyFiles:
 
 ## Future Improvements
 
-I have some exciting ideas for future upgrades that I hope to implement:
+We have some exciting ideas for future upgrades that we hope to implement:
 
 - **ID system.** An ID system will allow users to share files with each other easily across different networks.
 - **Rooms for multiple people.** Users will be able to share files with an entire room, making it easier to collaborate on projects.
-- **Improved security measures.** I are constantly working to improve the security of FlyFiles to ensure that your files are safe during transfer.
-- **Enhanced UI design.** I are always looking for ways to improve the user experience of FlyFiles to make it even easier to use.
+- **Improved security measures.** We are constantly working to improve the security of FlyFiles to ensure that your files are safe during transfer.
+- **Enhanced UI design.** We are always looking for ways to improve the user experience of FlyFiles to make it even easier to use.
 
-Thank you for considering FlyFiles for your file sharing needs. I hope you enjoy using the app! 🚀
+Thank you for considering FlyFiles for your file sharing needs. We hope you enjoy using the app! 🚀
