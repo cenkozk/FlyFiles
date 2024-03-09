@@ -34,26 +34,55 @@ function ReceivedFileDialog(props, ref) {
   return (
     <div>
       <Dialog
-        PaperProps={{ style: { borderRadius: "20px" } }}
+        PaperProps={{
+          style: { borderRadius: "20px", backgroundColor: "#120e19" },
+        }}
         sx={{ backdropFilter: "blur(8px)" }}
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle sx={{ fontFamily: raleway, fontWeight: "800", WebkitUserSelect: "none", color: "#3E3E3E" }} id="alert-dialog-title">
+        <DialogTitle
+          sx={{
+            fontFamily: raleway,
+            fontWeight: "800",
+            WebkitUserSelect: "none",
+            color: "#d4d4d8",
+          }}
+          id="alert-dialog-title"
+        >
           {"Received a file."}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ fontFamily: raleway, fontWeight: "500", color: "#3E3E3E" }} id="alert-dialog-description">
+          <DialogContentText
+            sx={{ fontFamily: raleway, fontWeight: "500", color: "#d4d4d8" }}
+            id="alert-dialog-description"
+          >
             {fileName}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button sx={{ borderRadius: "20px", fontFamily: raleway, fontWeight: "800", color: "#E76D61" }} onClick={handleClose}>
+          <Button
+            sx={{
+              borderRadius: "20px",
+              fontFamily: raleway,
+              fontWeight: "800",
+              color: "#E76D61",
+            }}
+            onClick={handleClose}
+          >
             Close
           </Button>
-          <Button sx={{ borderRadius: "20px", fontFamily: raleway, fontWeight: "800", color: "#E76D61" }} onClick={handleCloseSave}>
+          <Button
+            sx={{
+              borderRadius: "20px",
+              fontFamily: raleway,
+              fontWeight: "800",
+              color: "#E76D61",
+            }}
+            onClick={handleCloseSave}
+          >
             Save
           </Button>
         </DialogActions>

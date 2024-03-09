@@ -36,7 +36,7 @@ function ServerSide(props, ref) {
         });
 
       //Connection
-      socketRef.current = io.connect("ws://backendflyfiles-production.up.railway.app");
+      socketRef.current = io.connect("ws://breezy-fantasy-dive.glitch.me");
       await socketRef.current.on("connect", function () {
         console.log("Successfully connected to the server!");
 
@@ -51,7 +51,12 @@ function ServerSide(props, ref) {
         console.log("ok");
         peer.on("signal", (data) => {
           // The signal data is generated here and can be passed to the other peer to establish the connection
-          socketRef.current.emit("join room", { mySillyName, isMobile, myIP: myIP.current, signal: data });
+          socketRef.current.emit("join room", {
+            mySillyName,
+            isMobile,
+            myIP: myIP.current,
+            signal: data,
+          });
         });
       });
 
@@ -63,7 +68,11 @@ function ServerSide(props, ref) {
         users.splice(indexOfMe, 1);
         const peers = [];
         users.forEach((userID) => {
-          const peer = createPeer(userID.socketId, socketRef.current.id, userID.sillyName);
+          const peer = createPeer(
+            userID.socketId,
+            socketRef.current.id,
+            userID.sillyName
+          );
           peersRef.current.push({
             peerID: userID.socketId,
             sillyName: userID.sillyName,
@@ -79,7 +88,11 @@ function ServerSide(props, ref) {
       socketRef.current.on("all users test", (users) => {
         users.forEach((user) => {
           var check = false;
-          check = allPeersRefTest.current.some((u) => u.sillyName === user.sillyName) ? true : check;
+          check = allPeersRefTest.current.some(
+            (u) => u.sillyName === user.sillyName
+          )
+            ? true
+            : check;
           if (!check && !(socketRef.current.id == user.peerID)) {
             allPeersRefTest.current.push(user);
           }
@@ -91,7 +104,11 @@ function ServerSide(props, ref) {
       socketRef.current.on("all users client", (users) => {
         users.forEach((user) => {
           var check = false;
-          check = allPeersRefTest.current.some((u) => u.sillyName === user.sillyName) ? true : check;
+          check = allPeersRefTest.current.some(
+            (u) => u.sillyName === user.sillyName
+          )
+            ? true
+            : check;
           if (!check && !(socketRef.current.id == user.peerID)) {
             allPeersRefTest.current.push(user);
           }
@@ -103,7 +120,11 @@ function ServerSide(props, ref) {
         if (payload.userToSignal != socketRef.current.id) {
           return;
         }
-        const peer = addPeer(payload.signal, payload.callerID, payload.sillyName);
+        const peer = addPeer(
+          payload.signal,
+          payload.callerID,
+          payload.sillyName
+        );
         peersRef.current.push({
           peerID: payload.callerID,
           sillyName: payload.sillyName,
@@ -114,7 +135,9 @@ function ServerSide(props, ref) {
       });
 
       socketRef.current.on("receiving returned signal", (payload) => {
-        const item = peersRef.current.find((p) => p.peerID === payload.signalSender);
+        const item = peersRef.current.find(
+          (p) => p.peerID === payload.signalSender
+        );
         item.peer.signal(payload.signal);
       });
 
@@ -134,7 +157,14 @@ function ServerSide(props, ref) {
     });
 
     peer.on("signal", (signal) => {
-      socketRef.current.emit("sending signal", { userToSignal, callerID, signal, mySillyName, isMobile, myIP: myIP.current });
+      socketRef.current.emit("sending signal", {
+        userToSignal,
+        callerID,
+        signal,
+        mySillyName,
+        isMobile,
+        myIP: myIP.current,
+      });
     });
 
     peer.on("data", (data) => {
@@ -142,7 +172,10 @@ function ServerSide(props, ref) {
         spf.current.receive(peer, "TEST").then((transfer) => {
           transfer.on("progress", (sentBytes) => {
             if (sentBytes === 100) {
-              downloadedFile.current = new File([new Blob(transfer.fileData, { type: transfer.type })], transfer.fileName);
+              downloadedFile.current = new File(
+                [new Blob(transfer.fileData, { type: transfer.type })],
+                transfer.fileName
+              );
               props.onFileReceive(downloadedFile.current);
             }
           });
@@ -168,7 +201,10 @@ function ServerSide(props, ref) {
         spf.current.receive(peer, "TEST").then((transfer) => {
           transfer.on("progress", (sentBytes) => {
             if (sentBytes === 100) {
-              downloadedFile.current = new File([new Blob(transfer.fileData, { type: transfer.type })], transfer.fileName);
+              downloadedFile.current = new File(
+                [new Blob(transfer.fileData, { type: transfer.type })],
+                transfer.fileName
+              );
               props.onFileReceive(downloadedFile.current);
             }
           });
