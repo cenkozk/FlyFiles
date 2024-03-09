@@ -75,7 +75,7 @@ function App() {
           zIndex: -1,
         }}
       ></div>
-      <div className="flex flex-col items-center z-10 w-auto gap-6 justify-center">
+      <div className="flex flex-col items-center z-10 w-auto w-max-[90%] gap-6 justify-center">
         <ServerSide
           ref={ServerSideRef}
           mySillyName={mySillyName.current}
@@ -112,6 +112,11 @@ function App() {
           onChangeEvent={changeHandler}
           fileName={selectedFileName}
         />
+
+        <h1 className="bg-customBlue p-5 rounded-lg w-auto text-zinc-300 font-sans font-semibold text-sm">
+          Due to our use of free servers, it may take 15-30 seconds to find the
+          peer.
+        </h1>
       </div>
 
       <ReceivedFileDialog ref={dialogRef} onClickSave={onClickSave} />
