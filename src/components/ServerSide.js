@@ -21,7 +21,9 @@ function ServerSide(props, ref) {
     func();
     async function func() {
       //Gather client's IP4
-      await fetch("https://api.ipify.org/?format=json")
+      await fetch(
+        "https://boiled-industrious-contraption.glitch.me/https://api.ipify.org/?format=json"
+      )
         .then((response) => {
           if (!response.ok) {
             throw new Error("HTTP error " + response.status);
