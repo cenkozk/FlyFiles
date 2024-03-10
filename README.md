@@ -1,5 +1,3 @@
-![FlyFiles logo](./chrome_8d5l6nMbee.png)
-
 # FlyFiles: A File Sharing Application over the Web
 
 FlyFiles is a LAN-based file transfer app that enables users to share files with ease. You can check out the live version of the app by clicking on this [link](https://fly-files.vercel.app/).
